@@ -6,3 +6,90 @@ output: github_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+```{r}
+library(tidyverse)
+library(tidymodels)
+```
+
+```{r}
+data <- read_csv("hfi.csv")
+```
+
+
+```{r}
+head(data)
+```
+
+
+```{r}
+readr::read_csv("https://www.openintro.org/data/csv/hfi.csv")
+```
+
+
+```{r}
+hfi <- read_csv("https://www.openintro.org/data/csv/hfi.csv")
+```
+
+
+```{r}
+hfi
+```
+# 1. What are the dimensions of the dataset? What does each row represent? #
+
+
+
+```{r}
+dim(hfi)
+```
+
+We can see from the above code that the dimension of the hfi dataset is 1458 observations and 123 variables.
+
+As we are only concerned about the year 2016:
+```{r}
+hfi_2016 <- subset(hfi, year == 2016)
+```
+
+After selecting only the year 2016, we get that the dimension of the hfi_2016 is 162 obervation and 123 variables.
+
+# 2. What type of plot would you use to display the relationship between the personal freedom score, pf_score, and pf_expression_control? #
+
+I would use scatter plot to display the relationship between the pf_score and pf_expression_control as below:
+
+
+```{r}
+plot(hfi_2016$pf_score ~ hfi_2016$pf_expression_control,
+     xlab = "Expression control", ylab = "Pf Score", col = "red")
+```
+
+
+# 3. Does the relationship look linear? If you knew a country’s pf_expression_control, or its score out of 10, with 0 being the most, of political pressures and controls on media content, would you be comfortable using a linear model to predict the personal freedom score? #
+
+yes, I feel the relationship looks **linear** as with the increase in the expression control, the pf_score increases too. 
+
+#Task 4: Sum of squared residuals #
+
+# 4. Using openintro::plot_ss, choose a line that does a good job of minimizing the sum of squares. Run the function several times. What was the smallest sum of squares that you got? How does it compare to your neighbour’s? #
+
+After running the sum of square multiple times, the smallest number of sume of square I got was 108.484
+
+
+# Task 5: The Linear Model #
+
+```{r}
+m1 <- lm(pf_score ~ pf_expression_control, data = hfi_2016)
+m1
+tidy(m1)
+```
+
+```{r}
+summary(m1)
+```
+
+# 5. Interpret the y - intercept #
+
+The y-intercept is 4.2838. So, the human freedom score with no amount of political pressure on media is 4.2838.
+
+# 6. Interpret the slope # 
+
+The slope here is 0.5419. So, for each additional amount of the pressure on media content score, we would see the human freedom score to increase by 0.5419. 
