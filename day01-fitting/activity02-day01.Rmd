@@ -71,7 +71,7 @@ yes, I feel the relationship looks **linear** as with the increase in the expres
 
 # 4. Using openintro::plot_ss, choose a line that does a good job of minimizing the sum of squares. Run the function several times. What was the smallest sum of squares that you got? How does it compare to your neighbour’s? #
 
-After running the sum of square multiple times, the smallest number of sume of square I got was 108.484
+After running the sum of square multiple times, the smallest number of sum of square I got was 108.484
 
 
 # Task 5: The Linear Model #
@@ -88,8 +88,117 @@ summary(m1)
 
 # 5. Interpret the y - intercept #
 
-The y-intercept is 4.2838. So, the human freedom score with no amount of political pressure on media is 4.2838.
+The y-intercept is 4.2838. So, the human freedom score with no amount of political pressure on media is 4.2838. For countries with a pf_expression_control of 0 (those with the largest amount of political pressure on media content), we expect their mean personal freedom score to be 4.28
 
 # 6. Interpret the slope # 
 
 The slope here is 0.5419. So, for each additional amount of the pressure on media content score, we would see the human freedom score to increase by 0.5419. 
+
+# Day 2- Assessing an SLR Model #
+
+## 1. What does this value mean in the context of this mode ? ##
+
+
+
+```{r}
+hfi_2016 %>%
+  group_by(pf_score, pf_expression_control)%>%
+  summarize(cor = cor(pf_score, pf_expression_control))
+```
+
+```{r}
+glance(m1)
+```
+
+
+## 2. What is the value of Rsquare for this model ? ##
+
+The R square for this model is 0.7141.
+
+## 3. What does this value mean in the context of this model? ##
+
+This means that the model is 71.41% accurate.
+
+## 4. 
+
+
+
+```{r}
+model <- lm(hf_score ~ pf_expression_control, data = hfi_2016)
+```
+
+```{r}
+summary(model)
+```
+
+Equation of the Regression Line: 5.05340 + 0.36843
+
+## Task 3: Prediction and Prediction Erros ##
+
+```{r scatterplot}
+ggplot(data = hfi_2016, aes(x = pf_expression_control, y = pf_score))+
+  geom_point()
+  stat_smooth(method= "lm", se = FALSE)
+```
+
+```{r rating of 3}
+pf_expression_control <- 3
+
+```
+
+## 6. Predict a country's personal freedom school for one with 3 rating ##
+
+```{r}
+hfi_2016 %>%
+  group_by(pf_score)%>%
+  filter(pf_expression_control == 3)
+```
+## 7. Residual value for the prediction ##
+
+```{r residual value}
+
+standardres <- rstandard(model)
+standardres
+
+```
+
+
+# Task 4: Model Diagnostics #
+
+```{r}
+m1_aug <- augment(m1)
+```
+
+
+```{r}
+ggplot(data = m1_aug, aes(x = .fitted, y = .resid))+
+  geom_point()+
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  xlab("Fitted values") +
+  ylab("Residuals")
+```
+We can see that there is no pattern in the residual so there is a relationship between two variables.
+
+
+### Nearly Normal Residuals ###
+
+```{r}
+ggplot(data = m1_aug, aes(x= .resid))+
+  geom_histogram(binwidth = 0.25)+
+  xlab("Residuals")
+  
+```
+
+We can also use QQ plot to see if the normality assumption has been violated:
+
+```{r}
+ggplot(data = m1_aug, aes(sample = .resid))+
+  stat_qq()
+```
+I believe the nearly normal residual seems to be violated. As we can see in the beginning, the QQ plot doesn't follow a straight line at the begining which may violate the normal residual assumption.
+
+
+### Constant Variablity ###
+
+The points residuals and  fitted plot show that points are scattered around 0, there is a constant variability. So, it has not been violated. 
+
